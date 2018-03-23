@@ -8,7 +8,7 @@ do
     cd /Users/wchapman/SIO/research/100Amip/d4pdf/windsLev/W$kk
     echo $kk
 
-    for (( jj=1951; jj<=1953; jj++ ))
+    for (( jj=1951; jj<=2010; jj++ ))
     do
         echo another year!                                                                                                                                                                  
 	for i in $( ls U$kk_*.nc ); do

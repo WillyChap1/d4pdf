@@ -11,7 +11,7 @@ do
     for (( jj=1951; jj<=2010; jj++ ))
     do
         echo another year!                                                                                                                                                                  
-	for i in $( ls U$kk_*.nc ); do
+	for i in $( ls V$kk_*.nc ); do
 	    FILEBASENAME=$(echo $i | cut -d. -f1)
 	    SUBSTRING=$(echo $FILEBASENAME| cut -d'_' -f 2)
     
