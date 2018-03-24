@@ -381,9 +381,9 @@ for ii = 1:size(Qperiod,1)
         
        Qts = QperR(ii,jj,:);
        VTts = VTperR(ii,jj,:);
-       pQ = polyfit(VTts,Qts,1);
+       pQ = polyfit(VTts,Qts.^2,1);
        pQfit = pQ(1)*VTts+pQ(2);
-       Qresid = Qts - pQfit;
+       Qresid = Qts.^2 - pQfit;
        QSSresid = sum(Qresid.^2);
        QSStotal = (length(Qts)-1) * var(Qts);
        R2Q(ii,jj) = 1 - QSSresid/QSStotal;      
@@ -411,7 +411,7 @@ wsSStotal = (length(WSts)-1) * var(WSts);
 WSrsq = 1 - wsSSresid/wsSStotal
 
 pQfit = pQ(1)*VTts+pQ(2);
-Qresid = Qts - pQfit;
+Qresid = Qts.^2 - pQfit;
 qSSresid = sum(Qresid.^2);
 qSStotal = (length(Qts)-1) * var(Qts);
 Qrsq = 1 - qSSresid/qSStotal
@@ -497,7 +497,7 @@ title(tit,'FontSize',21)
 
 subplot(2,3,1)
 pQfit = pQ(1)*VTts+pQ(2);
-plot(VTts,Qts,'*')
+plot(VTts,Qts.^2,'*')
 xlabel('Vapor Transport [Kg/Kg * m/s]','FontSize',18);
 ylabel('Specific Humidity [Kg/Kg]','FontSize',18);
 hold on 
@@ -561,7 +561,7 @@ ylabel(h1,'R^2')
 
 set(ax11,'Position',[450         130        1972        1215])
 % 
-figsave=strcat('/Users/wchapman/Desktop/QUVfigs/',num2str(titMon(2:end)),'_',num2str(Level(RRa)),'_R2maps.jpg');
+figsave=strcat('/Users/wchapman/Desktop/QUVfigs/q2/',num2str(titMon(2:end)),'_',num2str(Level(RRa)),'_R2maps.jpg');
 saveas(ax11,figsave);
 close all 
 
@@ -626,7 +626,7 @@ for ii = 1:size(Qperiod,1)
         
        Qts = QperR(ii,jj,:);
        VTts = VTperR(ii,jj,:);
-       pQ = polyfit(VTts,Qts,1);
+       pQ = polyfit(VTts,Qts.^2,1);
        pQfit = pQ(1)*VTts+pQ(2);
        Qresid = Qts - pQfit;
        QSSresid = sum(Qresid.^2);
@@ -645,7 +645,7 @@ WSts = (Uts.^2+Vts.^2).^0.5;
 
 pU = polyfit(VTts,Uts,1);
 pV = polyfit(VTts,Vts,1);
-pQ = polyfit(VTts,Qts,1);
+pQ = polyfit(VTts,Qts.^2,1);
 pWS = polyfit(VTts,WSts,1);
 
 pWSfit = pWS(1)*VTts+pWS(2);
@@ -1106,7 +1106,7 @@ WSts = (Uts.^2+Vts.^2).^0.5;
 
 pU = polyfit((VTts),(Uts),1);
 pV = polyfit(VTts,Vts,1);
-pQ = polyfit(VTts,(Qts),1);
+pQ = polyfit(VTts,(Qts.^2),1);
 pWS = polyfit(VTts,WSts,1);
 
 pWSfit = pWS(1)*VTts+pWS(2);

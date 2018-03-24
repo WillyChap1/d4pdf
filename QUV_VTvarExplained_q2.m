@@ -19,7 +19,7 @@ anomaNINA = [0.5,4];    %min and max anomaly nina
 
 daysinMonth = [31 28 31 30 31 30 31 31 30 31 30 31];
 
-Level =[1000,925,850,700,600,500,400,300];
+Level =925;%[1000,925,850,700,600,500,400,300];
 for RRa = 1:length(Level)
 close all
 % =========================================================================
@@ -156,7 +156,7 @@ end
 
 
 
-VTperiod = ((Qperiod.*Uperiod).^2 + (Qperiod.*Vperiod.^2).^.5);
+VTperiod = ((Qperiod.*Uperiod).^2 + (Qperiod.*Vperiod).^2).^.5;
 
 VTMean = nanmean(VTperiod,3);
 VTMean = squeeze(VTMean);
@@ -371,7 +371,7 @@ for ii = 1:size(Vperiod,1)
     
 end
 
-%V R2 map
+%Q R2 map
 QperR = reshape(Qperiod,size(Qperiod,1),size(Qperiod,2),size(Qperiod,3)*size(Qperiod,4));
 
 R2Q = zeros(size(Qperiod,1),size(Qperiod,2));
@@ -383,9 +383,9 @@ for ii = 1:size(Qperiod,1)
        VTts = VTperR(ii,jj,:);
        pQ = polyfit(VTts,Qts.^2,1);
        pQfit = pQ(1)*VTts+pQ(2);
-       Qresid = Qts - pQfit;
+       Qresid = Qts.^2 - pQfit;
        QSSresid = sum(Qresid.^2);
-       QSStotal = (length(Qts)-1) * var(Qts);
+       QSStotal = (length(Qts)-1) * var(Qts.^2);
        R2Q(ii,jj) = 1 - QSSresid/QSStotal;      
         
     end
@@ -401,7 +401,7 @@ WSts = (Uts.^2+Vts.^2).^0.5;
 
 pU = polyfit(VTts,Uts,1);
 pV = polyfit(VTts,Vts,1);
-pQ = polyfit(VTts,Qts,1);
+pQ = polyfit(VTts,Qts.^2,1);
 pWS = polyfit(VTts,WSts,1);
 
 pWSfit = pWS(1)*VTts+pWS(2);
@@ -411,9 +411,9 @@ wsSStotal = (length(WSts)-1) * var(WSts);
 WSrsq = 1 - wsSSresid/wsSStotal
 
 pQfit = pQ(1)*VTts+pQ(2);
-Qresid = Qts - pQfit;
+Qresid = Qts.^2 - pQfit;
 qSSresid = sum(Qresid.^2);
-qSStotal = (length(Qts)-1) * var(Qts);
+qSStotal = (length(Qts)-1) * var(Qts.^2);
 Qrsq = 1 - qSSresid/qSStotal
 
 pUfit = pU(1)*VTts+pU(2);
@@ -497,12 +497,12 @@ title(tit,'FontSize',21)
 
 subplot(2,3,1)
 pQfit = pQ(1)*VTts+pQ(2);
-plot(VTts,Qts,'*')
+plot(VTts,Qts.^2,'*')
 xlabel('Vapor Transport [Kg/Kg * m/s]','FontSize',18);
 ylabel('Specific Humidity [Kg/Kg]','FontSize',18);
 hold on 
 plot(VTts,pQfit,'LineWidth',3)
-tit = strcat('Q',{'         '},'R^2:',{' '},num2str(Qrsq));
+tit = strcat('Q^2',{'         '},'R^2:',{' '},num2str(Qrsq));
 title(tit,'FontSize',21)
 
 aa3 = subplot(2,3,4);
@@ -516,7 +516,7 @@ m_contourf(lon,lat,Qplot','Color',[1,1,1],'LineWidth',1);
 hold on
 RuBU = cbrewer('seq','YlOrBr',24);
 colormap(aa3,RuBU);
-title(strcat('Q',{' '},titMon(2:end),{' '},num2str(Level(RRa)),'hPa AR R^2'))
+title(strcat('Q^2',{' '},titMon(2:end),{' '},num2str(Level(RRa)),'hPa AR R^2'))
 ax = gca;
 ax.FontSize = 21;
 h1  = colorbar;
@@ -560,11 +560,11 @@ caxis([0 1])
 ylabel(h1,'R^2')
 
 set(ax11,'Position',[450         130        1972        1215])
-
-figsave=strcat('/Users/wchapman/Desktop/QUVfigs/q2/',num2str(titMon(2:end)),'_',num2str(Level(RRa)),'_R2maps.jpg');
-saveas(ax11,figsave);
-close all 
-
+% 
+% figsave=strcat('/Users/wchapman/Desktop/QUVfigs/q2/',num2str(titMon(2:end)),'_',num2str(Level(RRa)),'_R2maps.jpg');
+% saveas(ax11,figsave);
+% close all 
+% 
 
 
 
@@ -628,9 +628,9 @@ for ii = 1:size(Qperiod,1)
        VTts = VTperR(ii,jj,:);
        pQ = polyfit(VTts,Qts.^2,1);
        pQfit = pQ(1)*VTts+pQ(2);
-       Qresid = Qts - pQfit;
+       Qresid = Qts.^2 - pQfit;
        QSSresid = sum(Qresid.^2);
-       QSStotal = (length(Qts)-1) * var(Qts);
+       QSStotal = (length(Qts)-1) * var(Qts.^2);
        R2Q(ii,jj) = 1 - QSSresid/QSStotal;      
         
     end
@@ -655,9 +655,9 @@ wsSStotal = (length(WSts)-1) * var(WSts);
 WSrsq = 1 - wsSSresid/wsSStotal
 
 pQfit = pQ(1)*VTts+pQ(2);
-Qresid = Qts - pQfit;
+Qresid = Qts.^2 - pQfit;
 qSSresid = sum(Qresid.^2);
-qSStotal = (length(Qts)-1) * var(Qts);
+qSStotal = (length(Qts)-1) * var(Qts.^2);
 Qrsq = 1 - qSSresid/qSStotal
 
 pUfit = pU(1)*VTts+pU(2);
@@ -735,7 +735,7 @@ xlabel('Vapor Transport [Kg/Kg * m/s]','FontSize',18);
 ylabel('Specific Humidity [Kg/Kg]','FontSize',18);
 hold on 
 plot(VTts,pQfit,'LineWidth',3)
-tit = strcat('Nino Q',{'         '},'R^2:',{' '},num2str(Qrsq));
+tit = strcat('Nino Q^2',{'         '},'R^2:',{' '},num2str(Qrsq));
 title(tit,'FontSize',21)
 
 aa3 = subplot(2,3,4);
@@ -749,7 +749,7 @@ m_contourf(lon,lat,Qplot','Color',[1,1,1],'LineWidth',1);
 hold on
 RuBU = cbrewer('seq','YlOrBr',24);
 colormap(aa3,RuBU);
-title(strcat('Nino Q',{' '},titMon(2:end),{' '},num2str(Level(RRa)),'hPa AR R^2'))
+title(strcat('Nino Q^2',{' '},titMon(2:end),{' '},num2str(Level(RRa)),'hPa AR R^2'))
 ax = gca;
 ax.FontSize = 21;
 h1  = colorbar;
@@ -794,10 +794,10 @@ ylabel(h1,'R^2')
 
 set(ax11,'Position',[450         130        1972        1215])
 
-figsave=strcat('/Users/wchapman/Desktop/QUVfigs/q2/',num2str(titMon(2:end)),'_',num2str(Level(RRa)),'_Nino_R2maps.jpg');
-saveas(ax11,figsave);
-
-close all 
+% figsave=strcat('/Users/wchapman/Desktop/QUVfigs/q2/',num2str(titMon(2:end)),'_',num2str(Level(RRa)),'_Nino_R2maps.jpg');
+% saveas(ax11,figsave);
+% 
+% close all 
 
 
 
@@ -861,7 +861,7 @@ for ii = 1:size(Qperiod,1)
        pQfit = pQ(1)*VTts+pQ(2);
        Qresid = Qts.^2 - pQfit;
        QSSresid = sum(Qresid.^2);
-       QSStotal = (length(Qts)-1) * var(Qts);
+       QSStotal = (length(Qts)-1) * var(Qts.^2);
        R2Q(ii,jj) = 1 - QSSresid/QSStotal;      
         
     end
@@ -888,7 +888,7 @@ WSrsq = 1 - wsSSresid/wsSStotal
 pQfit = pQ(1)*VTts+pQ(2);
 Qresid = Qts.^2 - pQfit;
 qSSresid = sum(Qresid.^2);
-qSStotal = (length(Qts)-1) * var(Qts);
+qSStotal = (length(Qts)-1) * var(Qts.^2);
 Qrsq = 1 - qSSresid/qSStotal
 
 pUfit = pU(1)*VTts+pU(2);
@@ -966,7 +966,7 @@ xlabel('Vapor Transport [Kg/Kg * m/s]','FontSize',18);
 ylabel('Specific Humidity [Kg/Kg]','FontSize',18);
 hold on 
 plot(VTts,pQfit,'LineWidth',3)
-tit = strcat('Nina Q',{'         '},'R^2:',{' '},num2str(Qrsq));
+tit = strcat('Nina Q^2',{'         '},'R^2:',{' '},num2str(Qrsq));
 title(tit,'FontSize',21)
 
 aa3 = subplot(2,3,4);
@@ -980,7 +980,7 @@ m_contourf(lon,lat,Qplot','Color',[1,1,1],'LineWidth',1);
 hold on
 RuBU = cbrewer('seq','YlOrBr',24);
 colormap(aa3,RuBU);
-title(strcat('Nina Q',{' '},titMon(2:end),{' '},num2str(Level(RRa)),'hPa AR R^2'))
+title(strcat('Nina Q^2',{' '},titMon(2:end),{' '},num2str(Level(RRa)),'hPa AR R^2'))
 ax = gca;
 ax.FontSize = 21;
 h1  = colorbar;
@@ -1025,10 +1025,10 @@ ylabel(h1,'R^2')
 
 set(ax11,'Position',[450         130        1972        1215])
 
-figsave=strcat('/Users/wchapman/Desktop/QUVfigs/q2/',num2str(titMon(2:end)),'_',num2str(Level(RRa)),'_Nina_R2maps.jpg');
-saveas(ax11,figsave);
-
-close all 
+% figsave=strcat('/Users/wchapman/Desktop/QUVfigs/q2/',num2str(titMon(2:end)),'_',num2str(Level(RRa)),'_Nina_R2maps.jpg');
+% saveas(ax11,figsave);
+% 
+% close all 
 
 
 %%
@@ -1091,7 +1091,7 @@ for ii = 1:size(Qperiod,1)
        pQfit = pQ(1)*VTts+pQ(2);
        Qresid = Qts.^2 - pQfit;
        QSSresid = sum(Qresid.^2);
-       QSStotal = (length(Qts)-1) * var(Qts);
+       QSStotal = (length(Qts)-1) * var(Qts.^2);
        R2Q(ii,jj) = 1 - QSSresid/QSStotal;      
         
     end
@@ -1106,7 +1106,7 @@ WSts = (Uts.^2+Vts.^2).^0.5;
 
 pU = polyfit((VTts),(Uts),1);
 pV = polyfit(VTts,Vts,1);
-pQ = polyfit(VTts,(Qts.^2),1);
+pQ = polyfit(VTts,Qts.^2,1);
 pWS = polyfit(VTts,WSts,1);
 
 pWSfit = pWS(1)*VTts+pWS(2);
@@ -1118,7 +1118,7 @@ WSrsq = 1 - wsSSresid/wsSStotal
 pQfit = pQ(1)*VTts+pQ(2);
 Qresid = (Qts.^2) - pQfit;
 qSSresid = sum(Qresid.^2);
-qSStotal = (length(Qts)-1) * var(Qts);
+qSStotal = (length(Qts)-1) * var(Qts.^2);
 Qrsq = 1 - qSSresid/qSStotal
 
 pUfit = pU(1)*(VTts)+pU(2);
@@ -1196,7 +1196,7 @@ xlabel('Vapor Transport [Kg/Kg * m/s]','FontSize',18);
 ylabel('Specific Humidity [Kg/Kg]','FontSize',18);
 hold on 
 plot(VTts,pQfit,'LineWidth',3)
-tit = strcat('Nuetral Q',{'         '},'R^2:',{' '},num2str(Qrsq));
+tit = strcat('Nuetral Q^2',{'         '},'R^2:',{' '},num2str(Qrsq));
 title(tit,'FontSize',21)
 
 aa3 = subplot(2,3,4);
@@ -1210,7 +1210,7 @@ m_contourf(lon,lat,Qplot','Color',[1,1,1],'LineWidth',1);
 hold on
 RuBU = cbrewer('seq','YlOrBr',24);
 colormap(aa3,RuBU);
-title(strcat('Nuetral Q',{' '},titMon(2:end),{' '},num2str(Level(RRa)),'hPa AR R^2'))
+title(strcat('Nuetral Q^2',{' '},titMon(2:end),{' '},num2str(Level(RRa)),'hPa AR R^2'))
 ax = gca;
 ax.FontSize = 21;
 h1  = colorbar;
@@ -1255,10 +1255,10 @@ ylabel(h1,'R^2')
 
 set(ax11,'Position',[450         130        1972        1215])
 
-figsave=strcat('/Users/wchapman/Desktop/QUVfigs/q2/',num2str(titMon(2:end)),'_',num2str(Level(RRa)),'_Nuetral_R2maps.jpg');
-saveas(ax11,figsave);
-
-close all 
+% figsave=strcat('/Users/wchapman/Desktop/QUVfigs/q2/',num2str(titMon(2:end)),'_',num2str(Level(RRa)),'_Nuetral_R2maps.jpg');
+% saveas(ax11,figsave);
+% 
+% close all 
 
 end
 
