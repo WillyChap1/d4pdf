@@ -39,8 +39,13 @@ for jj = 2:30
     leapyears(jj) = leapyears(jj-1)+4; 
 end
 
-findfilesQ = strcat('Geop200tot','*.mat');
-pp = dir(findfilesQ);
+findfilesGP = strcat('Geop200tot','*.mat');
+findfilesU = strcat('/Volumes/HotSlop/d4pdf/U200/U200tot','*.mat');
+findfilesV = strcat('/Volumes/HotSlop/d4pdf/V200/V200tot','*.mat');
+pp = dir(findfilesGP);
+uu = dir(findfilesU);
+vv = dir(findfilesV);
+
 
 load(pp(1).name);
 timetot = timer;
@@ -50,30 +55,42 @@ timekeepMonths =[];
 %GPkeepAll = [];
 GPkeepMonth = [];
 GPperiod = [];
+Uperiod =[];
+Vperiod =[];
 timekeepPeriod = [];
 
 for hh = 1:(length(pp)-2)
     GPperiodtemp = [];
     timePeriod = [];
+    Vperiodtemp = [];
+    Uperiodtemp = [];
     
     if isempty(months1) == 0
     disp(strcat('Im in year:',{' '},pp(hh).name(end-11:end-8)))
     fileGP = pp(hh).name;
-    disp(fileGP)
+    fileU = uu(hh).name;
+    fileV = vv(hh).name;
     load(fileGP);
+    load(strcat('/Volumes/HotSlop/d4pdf/U200/',fileU));
+    load(strcat('/Volumes/HotSlop/d4pdf/V200/',fileV));
+    
     timetot = timer;
         
     for jr = min(months1):max(months1)    %Dec Nov. 
         [~,month,~]=datevec(timetot);
         indexdo = find(month==jr);
         GPtemp = GPtot(:,:,:,indexdo);
+        Utemp = U200tot(:,:,:,indexdo);
+        Vtemp = v200tot(:,:,:,indexdo);
         
         GPkeepMonth = cat(4,GPkeepMonth,sum(GPtemp,4));
         %GPkeepAll = cat(4,GPkeepAll,GPtemp);
         timekeepMonths = cat(1,timekeepMonths,timetot(indexdo(1)));
         timekeep = cat(1,timekeep,timetot(indexdo));
         
-        GPperiodtemp = cat(4,GPperiodtemp,GPtemp);       
+        GPperiodtemp = cat(4,GPperiodtemp,GPtemp);   
+        Vperiodtemp = cat(4,Vperiodtemp,Vtemp);   
+        Uperiodtemp = cat(4,Uperiodtemp,Utemp);   
         timePeriod = cat(1,timePeriod,timetot(indexdo(1)));
         
     end
@@ -89,6 +106,8 @@ for hh = 1:(length(pp)-2)
         [~,month,~]=datevec(timetot);
         indexdo = find(month==jr);
         GPtemp = GPtot(:,:,:,indexdo);
+        Utemp = U200tot(:,:,:,indexdo);
+        Vtemp = v200tot(:,:,:,indexdo);
         
         
         GPkeepMonth = cat(4,GPkeepMonth,sum(GPtemp,4)); 
@@ -98,11 +117,15 @@ for hh = 1:(length(pp)-2)
         timePeriod = cat(1,timePeriod,timetot(indexdo(1)));
         
         GPperiodtemp = cat(4,GPperiodtemp,GPtemp);
+        Vperiodtemp = cat(4,Vperiodtemp,Vtemp);   
+        Uperiodtemp = cat(4,Uperiodtemp,Utemp);   
     end
         
     end
     
     GPperiod = cat(4,GPperiod,nanmean(GPperiodtemp,4));
+    Vperiod = cat(4,Vperiod,nanmean(Vperiodtemp,4));
+    Uperiod = cat(4,Uperiod,nanmean(Uperiodtemp,4));
     timekeepPeriod = cat(1,timekeepPeriod,timePeriod(1));
       
 end 
@@ -111,6 +134,14 @@ end
 GPMean = nanmean(GPperiod,3);
 GPMean = squeeze(GPMean);
 GPMean = nanmean(GPMean,3);
+
+UMean = nanmean(Uperiod,3);
+UMean = squeeze(UMean);
+UMean = nanmean(UMean,3);
+
+VMean = nanmean(Vperiod,3);
+VMean = squeeze(VMean);
+VMean = nanmean(VMean,3);
 
 
 %%
@@ -176,6 +207,8 @@ for ff = 1:length(Ninoyears)
     NinoIndex = find(yearsIn==Ninoyears(ff));
     
     GPcatMemNino(:,:,:,ff) = GPperiod(:,:,:,NinoIndex); 
+    VcatMemNino(:,:,:,ff) = Vperiod(:,:,:,NinoIndex); 
+    UcatMemNino(:,:,:,ff) = Uperiod(:,:,:,NinoIndex); 
     timeNino(ff) = timekeepPeriod(NinoIndex);
     
 end
@@ -185,7 +218,15 @@ GPCompositeNino = squeeze(GPCompositeNino);
 GPCompositeNino = nanmean(GPCompositeNino,3);
 GPCompositeNino = squeeze(GPCompositeNino);
 
+VCompositeNino = nanmean(VcatMemNino,3);
+VCompositeNino = squeeze(VCompositeNino);
+VCompositeNino = nanmean(VCompositeNino,3);
+VCompositeNino = squeeze(VCompositeNino);
 
+UCompositeNino = nanmean(UcatMemNino,3);
+UCompositeNino = squeeze(UCompositeNino);
+UCompositeNino = nanmean(UCompositeNino,3);
+UCompositeNino = squeeze(UCompositeNino);
 %==========================================================================
 %========================       Nina .       ==============================
 %==========================================================================
@@ -195,6 +236,8 @@ for ff = 1:length(Ninayears)
     NinaIndex = find(yearsIn==Ninayears(ff));
     
     GPcatMemNina(:,:,:,ff) = GPperiod(:,:,:,NinaIndex); 
+    VcatMemNina(:,:,:,ff) = Vperiod(:,:,:,NinaIndex); 
+    UcatMemNina(:,:,:,ff) = Uperiod(:,:,:,NinaIndex);
     timeNina(ff) = timekeepPeriod(NinaIndex);
     
 end
@@ -204,6 +247,15 @@ GPCompositeNina = squeeze(GPCompositeNina);
 GPCompositeNina = nanmean(GPCompositeNina,3);
 GPCompositeNina = squeeze(GPCompositeNina);
 
+UCompositeNina = nanmean(UcatMemNina,3);
+UCompositeNina = squeeze(UCompositeNina);
+UCompositeNina = nanmean(UCompositeNina,3);
+UCompositeNina = squeeze(UCompositeNina);
+
+VCompositeNina = nanmean(VcatMemNina,3);
+VCompositeNina = squeeze(VCompositeNina);
+VCompositeNina = nanmean(VCompositeNina,3);
+VCompositeNina = squeeze(VCompositeNina);
 
 %==========================================================================
 %========================     No  Nino .       ============================
@@ -213,7 +265,10 @@ for ff = 1:length(NoNinoyears)
     
     NoNinaIndex = find(yearsIn==NoNinoyears(ff));
     
-    GPcatMemNoNino(:,:,:,ff) = GPperiod(:,:,:,NoNinaIndex); 
+    GPcatMemNoNino(:,:,:,ff) = GPperiod(:,:,:,NoNinaIndex);
+    VcatMemNoNino(:,:,:,ff) = Vperiod(:,:,:,NoNinaIndex); 
+    UcatMemNoNino(:,:,:,ff) = Uperiod(:,:,:,NoNinaIndex); 
+    
     timeNina(ff) = timekeepPeriod(NoNinaIndex);
     
 end
@@ -223,6 +278,15 @@ GPCompositeNoNino = squeeze(GPCompositeNoNino);
 GPCompositeNoNino = nanmean(GPCompositeNoNino,3);
 GPCompositeNoNino = squeeze(GPCompositeNoNino);
 
+VCompositeNoNino = nanmean(VcatMemNoNino,3);
+VCompositeNoNino = squeeze(VCompositeNoNino);
+VCompositeNoNino = nanmean(VCompositeNoNino,3);
+VCompositeNoNino = squeeze(VCompositeNoNino);
+
+UCompositeNoNino = nanmean(UcatMemNoNino,3);
+UCompositeNoNino = squeeze(UCompositeNoNino);
+UCompositeNoNino = nanmean(UCompositeNoNino,3);
+UCompositeNoNino = squeeze(UCompositeNoNino);
 
 %%
 disp('Entering BootStrap')
@@ -235,6 +299,16 @@ GPmeanYear = nanmean(GPperiod,3);
 GPmeanNino = nanmean(GPcatMemNino,3);
 GPmeanNina = nanmean(GPcatMemNina,3);
 GPmeanNoNino = nanmean(GPcatMemNoNino,3);
+
+UmeanYear = nanmean(Uperiod,3);
+UmeanNino = nanmean(UcatMemNino,3);
+UmeanNina = nanmean(UcatMemNina,3);
+UmeanNoNino = nanmean(UcatMemNoNino,3);
+
+VmeanYear = nanmean(Vperiod,3);
+VmeanNino = nanmean(VcatMemNino,3);
+VmeanNina = nanmean(VcatMemNina,3);
+VmeanNoNino = nanmean(VcatMemNoNino,3);
 
 GPCompInt = GPperiod - GPmeanYear;
 GPCompIntNino = GPcatMemNino - GPmeanNino;
@@ -261,6 +335,9 @@ GPplotInt = GPStdCompInt;
 GPplotIntNino = GPStdCompIntNino;
 GPplotIntNina = GPStdCompIntNina;
 GPplotIntNoNino = GPStdCompIntNoNino;
+
+
+
 
                                 %options: [gap]   %hght [Top Bot]  %Wid  [L R]                          
 make_it_tight = true;
@@ -316,16 +393,22 @@ cv12 = max(max(max(abs(fmax))));
 
 aa2=subplot(3,4,2);
 padvar =4;
+uPad = padarray(UCompositeNino,[padvar,padvar],nan,'both');
+vPad = padarray(VCompositeNino,[padvar,padvar],nan,'both');
+uPad=uPad.*3.6;
+vPad=vPad.*3.6;
 padCOMPmean = padarray(GPCompositeNino,[padvar,padvar],nan,'both');
+
 GPplot = padCOMPmean;
 GPplotInt =  padarray((GPplotIntNino),[padvar,padvar],nan,'both');
 m_proj('miller','lon',[double(lon(1)), double(lon(end))],'lat',[double(lat(1)), double(lat(end))]);
 hold on
 m_grid('box','fancy','tickdir','in');
-m_coast('linewidth',2,'Color','k')
+m_coast('linewidth',2,'Color','k');
 [Cmap,Ctext] = m_contour(lon,lat,GPplot','Color',[1 1 1],'LineWidth',3);
 hold on
 m_contourf(lon,lat,GPplotInt',24);
+m_barbs(lon,lat,uPad,vPad,7,15,0.09,1,[1.0000    0.9294    0.6275]);
 clabel(Cmap,Ctext,'FontSize',20,'Color',[1,1,1],'LabelSpacing',500);
 RuBU = cbrewer('seq','Blues',24);
 colormap(aa2,RuBU);
@@ -338,16 +421,21 @@ ylabel(h1,'Std Dev of GPH [m]');
 
 aa3=subplot(3,4,3);
 padvar =4;
+uPad = padarray(UCompositeNina,[padvar,padvar],nan,'both');
+vPad = padarray(VCompositeNina,[padvar,padvar],nan,'both');
+uPad=uPad.*3.6;
+vPad=vPad.*3.6;
 padCOMPmean = padarray(GPCompositeNina,[padvar,padvar],nan,'both');
 GPplot = padCOMPmean;
 GPplotInt =  padarray((GPplotIntNina),[padvar,padvar],nan,'both');
 m_proj('miller','lon',[double(lon(1)), double(lon(end))],'lat',[double(lat(1)), double(lat(end))]);
 hold on
 m_grid('box','fancy','tickdir','in');
-m_coast('linewidth',2,'Color','k')
+m_coast('linewidth',2,'Color','k');
 [Cmap,Ctext] = m_contour(lon,lat,GPplot','Color',[1,1,1],'LineWidth',3);
 hold on
 m_contourf(lon,lat,GPplotInt',24);
+m_barbs(lon,lat,uPad,vPad,7,15,0.09,1,[1.0000    0.9294    0.6275]);
 clabel(Cmap,Ctext,'FontSize',20,'Color',[1,1,1],'LabelSpacing',500);
 RuBU = cbrewer('seq','Blues',24);
 colormap(aa3,RuBU);
@@ -360,16 +448,21 @@ ylabel(h1,'Std Dev of GPH [m]');
 
 aa4=subplot(3,4,4);
 padvar =4;
+uPad = padarray(UCompositeNoNino,[padvar,padvar],nan,'both');
+vPad = padarray(VCompositeNoNino,[padvar,padvar],nan,'both');
+uPad=uPad.*3.6;
+vPad=vPad.*3.6;
 padCOMPmean = padarray(GPCompositeNoNino,[padvar,padvar],nan,'both');
 GPplot = padCOMPmean;
 GPplotInt =  padarray((GPplotIntNoNino),[padvar,padvar],nan,'both');
 m_proj('miller','lon',[double(lon(1)), double(lon(end))],'lat',[double(lat(1)), double(lat(end))]);
 hold on
 m_grid('box','fancy','tickdir','in');
-m_coast('linewidth',2,'Color','k')
+m_coast('linewidth',2,'Color','k');
 [Cmap,Ctext] = m_contour(lon,lat,GPplot','Color',[1,1,1],'LineWidth',3);
 hold on
 m_contourf(lon,lat,GPplotInt',24);
+m_barbs(lon,lat,uPad,vPad,7,15,0.09,1,[1.0000    0.9294    0.6275]);
 clabel(Cmap,Ctext,'FontSize',20,'Color',[1,1,1],'LabelSpacing',500);
 RuBU = cbrewer('seq','Blues',24);
 colormap(aa4,RuBU);
@@ -484,6 +577,10 @@ cv1 = max(max(max(abs(fmax))));
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 aa2=subplot(3,4,6);
 padvar =4;
+uPad = padarray(UCompositeNino - UMean,[padvar,padvar],nan,'both');
+vPad = padarray(VCompositeNino - VMean,[padvar,padvar],nan,'both');
+uPad=uPad.*3.6;
+vPad=vPad.*3.6;
 padCOMPmean = padarray(GPCompositeNino-GPMean,[padvar,padvar],nan,'both');
 
 moreNINO = padCOMPmean(5:end-4,5:end-4)>GPhighNINO;
@@ -496,10 +593,11 @@ GPplot = padCOMPmean;
 m_proj('miller','lon',[double(lon(1)), double(lon(end))],'lat',[double(lat(1)), double(lat(end))]);
 hold on
 m_grid('box','fancy','tickdir','in');
-m_coast('linewidth',2,'Color','k')
+m_coast('linewidth',2,'Color','k');
 m_contourf(lon,lat,GPplot','Color',[1 1 1],'LineWidth',3);
 hold on
 m_plot(lon(rNsigNino+4),lat(cNsigNino+4),'marker','x','color','k','linest','none','markersize',3,'markerfacecolor','w');
+m_barbs(lon,lat,uPad,vPad,9,15,0.07,2,'k');
 RuBU = cbrewer('div','RdBu',24);
 colormap(aa2,RuBU);
 title(strcat('Nino',{' '},titMon,{' '},'200 hPa GPH'))
@@ -511,6 +609,10 @@ ylabel(h1,'GPH [m]');
 
 aa3=subplot(3,4,7);
 padvar =4;
+uPad = padarray(UCompositeNina - UMean,[padvar,padvar],nan,'both');
+vPad = padarray(VCompositeNina - VMean,[padvar,padvar],nan,'both');
+uPad=uPad.*3.6;
+vPad=vPad.*3.6;
 padCOMPmean = padarray(GPCompositeNina-GPMean,[padvar,padvar],nan,'both');
 
 moreNINO = padCOMPmean(5:end-4,5:end-4)>GPhighNINA;
@@ -526,7 +628,8 @@ m_grid('box','fancy','tickdir','in');
 m_coast('linewidth',2,'Color','k')
 m_contourf(lon,lat,GPplot','Color',[1,1,1],'LineWidth',3);
 hold on
-m_plot(lon(rNsigNino+4),lat(cNsigNino+4),'marker','x','color','k','linest','none','markersize',3,'markerfacecolor','w');
+m_plot(lon(rNsigNino+4),lat(cNsigNino+4),'marker','x','color','w','linest','none','markersize',3,'markerfacecolor','w');
+m_barbs(lon,lat,uPad,vPad,9,15,0.07,2,'k');
 RuBU = cbrewer('div','RdBu',24);
 colormap(aa3,RuBU);
 title(strcat('Nina',{' '},titMon,{' '},'200 hPa GPH'))
@@ -538,6 +641,10 @@ ylabel(h1,'GPH [m]');
 
 aa4=subplot(3,4,8);
 padvar =4;
+uPad = padarray(UCompositeNoNino - UMean,[padvar,padvar],nan,'both');
+vPad = padarray(VCompositeNoNino - VMean,[padvar,padvar],nan,'both');
+uPad=uPad.*3.6;
+vPad=vPad.*3.6;
 padCOMPmean = padarray(GPCompositeNoNino-GPMean,[padvar,padvar],nan,'both');
 
 moreNINO = padCOMPmean(5:end-4,5:end-4)>GPhighNoNINO;
@@ -551,10 +658,11 @@ GPplot = padCOMPmean;
 m_proj('miller','lon',[double(lon(1)), double(lon(end))],'lat',[double(lat(1)), double(lat(end))]);
 hold on
 m_grid('box','fancy','tickdir','in');
-m_coast('linewidth',2,'Color','k')
+m_coast('linewidth',2,'Color','k');
 m_contourf(lon,lat,GPplot','Color',[1,1,1],'LineWidth',3);
 hold on
-m_plot(lon(rNsigNino+4),lat(cNsigNino+4),'marker','x','color','k','linest','none','markersize',3,'markerfacecolor','w');
+m_plot(lon(rNsigNino+4),lat(cNsigNino+4),'marker','x','color','w','linest','none','markersize',3,'markerfacecolor','w');
+m_barbs(lon,lat,uPad,vPad,9,15,0.07,2,'k');
 RuBU = cbrewer('div','RdBu',24);
 colormap(aa4,RuBU);
 title(strcat('Nuetral',{' '},titMon,{' '},'200 hPa GPH'))

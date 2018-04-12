@@ -240,7 +240,7 @@ end
 end
 
 %load('/Users/wchapman/SIO/research/100Amip/datasets/DJF_QUVperiodLev.mat')
-save('/Users/wchapman/SIO/research/100Amip/datasets/DJF_QUVperiodLev.mat','QperiodLev','timekeepPeriod','UperiodLev','Vperiodlev');
+save('/Users/wchapman/SIO/research/100Amip/datasets/DJF_QUVperiodLev_lon210.mat','QperiodLev','timekeepPeriod','UperiodLev','VperiodLev');
 VTperiodLev = ((QperiodLev.*UperiodLev).^2+(QperiodLev.*VperiodLev).^2).^0.5;
 
 %%  Divde into Nino, Nina, and Nuetral 

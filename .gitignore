@@ -1,4 +1,6 @@
 *.nc
 *.mat
+*.pptx
+*.ppt
 .DS_Store
 gitinstructions.txt
